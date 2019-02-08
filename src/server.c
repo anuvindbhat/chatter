@@ -3,10 +3,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <string.h>
 #include <netdb.h>
-#include <assert.h>
-#include "common.h"
+#include <string.h>
+#include "../include/common.h"
 
 #define MAX_PENDING 3
 
@@ -65,37 +64,6 @@ int conn_client(int server_sockfd, char *client_name, int name_size) {
 
 	printf("Connected to client %s (%s)\n", client_name, inet_ntoa(client_addr.sin_addr));
 	return client_sockfd;
-}
-
-void send_msg(int sockfd) {
-	char msg[MSG_SIZE];
-	int size;
-
-	printf("> me: ");
-	assert(scanf(" %[^\n]", msg) == 1);
-	if (strcmp(msg, "/exit") == 0) {
-		fprintf(stderr, "Exiting\n");
-		exit(EXIT_SUCCESS);
-	}
-	size = strlen(msg);
-	if (send(sockfd, msg, size, 0) != size) {
-		fprintf(stderr, "Error while sending\n");
-		exit(EXIT_FAILURE);
-	}
-	fprintf(stderr, "Sent message\n");
-}
-
-void recv_msg(int sockfd, char *name) {
-	char msg[MSG_SIZE];
-	int size;
-
-	if ((size = recv(sockfd, msg, MSG_SIZE - 1, 0)) == -1) {
-		fprintf(stderr, "Error while receiving\n");
-		exit(EXIT_FAILURE);
-	}
-	msg[size] = '\0';
-	fprintf(stderr, "Received message\n");
-	printf("> %s: %s\n", name, msg);
 }
 
 int main() {

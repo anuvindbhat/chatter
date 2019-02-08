@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cc -Wall -O2 server.c -o server.out
-cc -Wall -O2 client.c -o client.out
+cc -Wall -O2 src/server.c src/common.c -o server.out
+cc -Wall -O2 src/client.c src/common.c -o client.out
