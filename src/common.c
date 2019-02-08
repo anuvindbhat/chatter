@@ -124,6 +124,7 @@ void start_chat(int sockfd, char *name) {
 	fprintf(stderr, "Send thread created\n");
 	assert(pthread_mutex_unlock(&stderr_mutex) == 0);
 	#endif
+
 	struct recv_params rparams;
 	rparams.sockfd = sockfd;
 	rparams.name = name;
