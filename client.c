@@ -5,11 +5,14 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <netdb.h>
+#include <assert.h>
 
-#define PORT_NUMBER 12345
+#define PORT_NUMBER 1729
 #define MSG_SIZE 1000
+#define NAME_SIZE 15
 
-int conn_server() {
+int conn_server(char *server_name, int name_size) {
 	int sockfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1) {
 		fprintf(stderr, "Error in socket creation\n");
@@ -25,7 +28,7 @@ int conn_server() {
 	while (1) {
 		char ip_addr[16];
 		printf("Enter the server IP address (. separated)\n");
-		scanf(" %s", ip_addr);
+		assert(scanf(" %s", ip_addr) == 1);
 		if (inet_aton(ip_addr, &server_addr.sin_addr) != 0) {
 			break;
 		}
@@ -38,48 +41,57 @@ int conn_server() {
 	}
 	fprintf(stderr, "Connection established\n");
 
+	if (getnameinfo((struct sockaddr *)&server_addr, sizeof(struct sockaddr_in), \
+					server_name, name_size, NULL, 0, 0) != 0) {
+		fprintf(stderr, "Error in getting server name\n");
+		exit(EXIT_FAILURE);
+	}
+	fprintf(stderr, "Got server name\n");
+
+	printf("Connected to server %s (%s)\n", server_name, inet_ntoa(server_addr.sin_addr));
 	return sockfd;
 }
 
 void send_msg(int sockfd) {
 	char msg[MSG_SIZE];
-	int length;
+	int size;
 
-	printf("> @: ");
-	scanf(" %[^\n]", msg);
+	printf("> me: ");
+	assert(scanf(" %[^\n]", msg) == 1);
 	if (strcmp(msg, "/exit") == 0) {
 		fprintf(stderr, "Exiting\n");
 		exit(EXIT_SUCCESS);
 	}
-	length = strlen(msg);
-	if (send(sockfd, msg, length, 0) != length) {
+	size = strlen(msg);
+	if (send(sockfd, msg, size, 0) != size) {
 		fprintf(stderr, "Error while sending\n");
 		exit(EXIT_FAILURE);
 	}
 	fprintf(stderr, "Sent message\n");
 }
 
-void recv_msg(int sockfd) {
+void recv_msg(int sockfd, char *name) {
 	char msg[MSG_SIZE];
-	int length;
+	int size;
 
-	if ((length = recv(sockfd, msg, MSG_SIZE - 1, 0)) == -1) {
+	if ((size = recv(sockfd, msg, MSG_SIZE - 1, 0)) == -1) {
 		fprintf(stderr, "Error while receiving\n");
 		exit(EXIT_FAILURE);
 	}
-	msg[length] = '\0';
+	msg[size] = '\0';
 	fprintf(stderr, "Received message\n");
-	printf("> &: %s\n", msg);
+	printf("> %s: %s\n", name, msg);
 }
 
 int main() {
-	int sockfd = conn_server();
+	char server_name[NAME_SIZE];
+	int sockfd = conn_server(server_name, NAME_SIZE);
 
 	printf("Ready to message\n");
 	printf("Type \"/exit\" (without quotes) to exit\n");
 	while (1) {
 		send_msg(sockfd);
-		recv_msg(sockfd);
+		recv_msg(sockfd, server_name);
 	}
 
 	close(sockfd);

@@ -4,10 +4,13 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <netdb.h>
+#include <assert.h>
 
-#define PORT_NUMBER 12345
-#define MAX_PENDING 5
+#define PORT_NUMBER 1729
+#define MAX_PENDING 3
 #define MSG_SIZE 1000
+#define NAME_SIZE 15
 
 int start_listen() {
 	int server_sockfd = socket(PF_INET, SOCK_STREAM, 0);
@@ -45,7 +48,7 @@ int start_listen() {
 	return server_sockfd;
 }
 
-int conn_client(int server_sockfd) {
+int conn_client(int server_sockfd, char *client_name, int name_size) {
 	struct sockaddr_in client_addr;
 	socklen_t addr_length = sizeof(struct sockaddr_in);
 	int client_sockfd = accept(server_sockfd, (struct sockaddr *)&client_addr, &addr_length);
@@ -55,49 +58,57 @@ int conn_client(int server_sockfd) {
 	}
 	fprintf(stderr, "Client socket created\n");
 
-	printf("Connected to client %s\n", inet_ntoa(client_addr.sin_addr));
+	if (getnameinfo((struct sockaddr *)&client_addr, sizeof(struct sockaddr_in), \
+					client_name, name_size, NULL, 0, 0) != 0) {
+		fprintf(stderr, "Error in getting client name\n");
+		exit(EXIT_FAILURE);
+	}
+	fprintf(stderr, "Got client name\n");
+
+	printf("Connected to client %s (%s)\n", client_name, inet_ntoa(client_addr.sin_addr));
 	return client_sockfd;
 }
 
 void send_msg(int sockfd) {
 	char msg[MSG_SIZE];
-	int length;
+	int size;
 
-	printf("> @: ");
-	scanf(" %[^\n]", msg);
+	printf("> me: ");
+	assert(scanf(" %[^\n]", msg) == 1);
 	if (strcmp(msg, "/exit") == 0) {
 		fprintf(stderr, "Exiting\n");
 		exit(EXIT_SUCCESS);
 	}
-	length = strlen(msg);
-	if (send(sockfd, msg, length, 0) != length) {
+	size = strlen(msg);
+	if (send(sockfd, msg, size, 0) != size) {
 		fprintf(stderr, "Error while sending\n");
 		exit(EXIT_FAILURE);
 	}
 	fprintf(stderr, "Sent message\n");
 }
 
-void recv_msg(int sockfd) {
+void recv_msg(int sockfd, char *name) {
 	char msg[MSG_SIZE];
-	int length;
+	int size;
 
-	if ((length = recv(sockfd, msg, MSG_SIZE - 1, 0)) == -1) {
+	if ((size = recv(sockfd, msg, MSG_SIZE - 1, 0)) == -1) {
 		fprintf(stderr, "Error while receiving\n");
 		exit(EXIT_FAILURE);
 	}
-	msg[length] = '\0';
+	msg[size] = '\0';
 	fprintf(stderr, "Received message\n");
-	printf("> &: %s\n", msg);
+	printf("> %s: %s\n", name, msg);
 }
 
 int main() {
 	int server_sockfd = start_listen();
-	int client_sockfd = conn_client(server_sockfd);
+	char client_name[NAME_SIZE];
+	int client_sockfd = conn_client(server_sockfd, client_name, NAME_SIZE);
 
 	printf("Ready to message\n");
 	printf("Type \"/exit\" (without quotes) to exit\n");
 	while (1) {
-		recv_msg(client_sockfd);
+		recv_msg(client_sockfd, client_name);
 		send_msg(client_sockfd);
 	}
 
