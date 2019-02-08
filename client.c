@@ -7,10 +7,7 @@
 #include <string.h>
 #include <netdb.h>
 #include <assert.h>
-
-#define PORT_NUMBER 1729
-#define MSG_SIZE 1000
-#define NAME_SIZE 15
+#include "common.h"
 
 int conn_server(char *server_name, int name_size) {
 	int sockfd = socket(PF_INET, SOCK_STREAM, 0);

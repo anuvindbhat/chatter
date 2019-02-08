@@ -6,11 +6,9 @@
 #include <string.h>
 #include <netdb.h>
 #include <assert.h>
+#include "common.h"
 
-#define PORT_NUMBER 1729
 #define MAX_PENDING 3
-#define MSG_SIZE 1000
-#define NAME_SIZE 15
 
 int start_listen() {
 	int server_sockfd = socket(PF_INET, SOCK_STREAM, 0);
