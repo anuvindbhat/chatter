@@ -64,6 +64,7 @@ int start_listen() {
 int conn_client(int server_sockfd, char *client_name, int name_size) {
 	struct sockaddr_in client_addr;
 	socklen_t addr_length = sizeof(struct sockaddr_in);
+	printf("Waiting for client to connect\n");
 	int client_sockfd = accept(server_sockfd, (struct sockaddr *)&client_addr, &addr_length);
 	if (client_sockfd == -1) {
 		#ifdef DEBUG

@@ -113,24 +113,32 @@ void start_chat(int sockfd, char *name) {
 	pthread_t send_thread, recv_thread;
 	if (pthread_create(&send_thread, NULL, send_msg, (void *)&sockfd) != 0) {
 		#ifdef DEBUG
+		assert(pthread_mutex_lock(&stderr_mutex) == 0);
 		fprintf(stderr, "Error in send thread creation\n");
+		assert(pthread_mutex_unlock(&stderr_mutex) == 0);
 		#endif
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
+	assert(pthread_mutex_lock(&stderr_mutex) == 0);
 	fprintf(stderr, "Send thread created\n");
+	assert(pthread_mutex_unlock(&stderr_mutex) == 0);
 	#endif
 	struct recv_params rparams;
 	rparams.sockfd = sockfd;
 	rparams.name = name;
 	if (pthread_create(&recv_thread, NULL, recv_msg, (void *)&rparams) != 0) {
 		#ifdef DEBUG
+		assert(pthread_mutex_lock(&stderr_mutex) == 0);
 		fprintf(stderr, "Error in receive thread creation\n");
+		assert(pthread_mutex_unlock(&stderr_mutex) == 0);
 		#endif
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
+	assert(pthread_mutex_lock(&stderr_mutex) == 0);
 	fprintf(stderr, "Receive thread created\n");
+	assert(pthread_mutex_unlock(&stderr_mutex) == 0);
 	#endif
 
 	pthread_join(send_thread, NULL);
