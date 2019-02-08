@@ -7,7 +7,7 @@
 
 #define PORT_NUMBER 12345
 #define MAX_PENDING 5
-#define BUFFER_SIZE 1000
+#define MSG_SIZE 1000
 
 int start_listen() {
 	int server_sockfd = socket(PF_INET, SOCK_STREAM, 0);
@@ -60,17 +60,17 @@ int conn_client(int server_sockfd) {
 }
 
 void send_msg(int sockfd) {
-	char buffer[BUFFER_SIZE];
+	char msg[MSG_SIZE];
 	int length;
 
 	printf("> @: ");
-	scanf(" %[^\n]", buffer);
-	if (strcmp(buffer, "/exit") == 0) {
+	scanf(" %[^\n]", msg);
+	if (strcmp(msg, "/exit") == 0) {
 		fprintf(stderr, "Exiting\n");
 		exit(EXIT_SUCCESS);
 	}
-	length = strlen(buffer);
-	if (send(sockfd, buffer, length, 0) != length) {
+	length = strlen(msg);
+	if (send(sockfd, msg, length, 0) != length) {
 		fprintf(stderr, "Error while sending\n");
 		exit(EXIT_FAILURE);
 	}
@@ -78,16 +78,16 @@ void send_msg(int sockfd) {
 }
 
 void recv_msg(int sockfd) {
-	char buffer[BUFFER_SIZE];
+	char msg[MSG_SIZE];
 	int length;
 
-	if ((length = recv(sockfd, buffer, BUFFER_SIZE - 1, 0)) == -1) {
+	if ((length = recv(sockfd, msg, MSG_SIZE - 1, 0)) == -1) {
 		fprintf(stderr, "Error while receiving\n");
 		exit(EXIT_FAILURE);
 	}
-	buffer[length] = '\0';
+	msg[length] = '\0';
 	fprintf(stderr, "Received message\n");
-	printf("> &: %s\n", buffer);
+	printf("> &: %s\n", msg);
 }
 
 int main() {
