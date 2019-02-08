@@ -47,7 +47,7 @@ int start_listen() {
 
 int conn_client(int server_sockfd) {
 	struct sockaddr_in client_addr;
-	socklen_t addr_length = sizeof(client_addr);
+	socklen_t addr_length = sizeof(struct sockaddr_in);
 	int client_sockfd = accept(server_sockfd, (struct sockaddr *)&client_addr, &addr_length);
 	if (client_sockfd == -1) {
 		fprintf(stderr, "Error in client socket creation\n");
