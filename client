@@ -3,4 +3,4 @@
 if [ ! -f client.out ]; then
 	cc -Wall -O2 src/client.c src/common.c -o client.out -pthread
 fi
-./client.out 2>/dev/null
+./client.out

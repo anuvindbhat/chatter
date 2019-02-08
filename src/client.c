@@ -12,10 +12,14 @@
 int conn_server(char *server_name, int name_size) {
 	int sockfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1) {
+		#ifdef DEBUG
 		fprintf(stderr, "Error in socket creation\n");
+		#endif
 		exit(EXIT_FAILURE);
 	}
+	#ifdef DEBUG
 	fprintf(stderr, "Socket created\n");
+	#endif
 
 	struct sockaddr_in server_addr;
 	memset(&server_addr, 0, sizeof(struct sockaddr_in));
@@ -33,17 +37,25 @@ int conn_server(char *server_name, int name_size) {
 	}
 
 	if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr_in)) != 0) {
+		#ifdef DEBUG
 		fprintf(stderr, "Error in connection establishment\n");
+		#endif
 		exit(EXIT_FAILURE);
 	}
+	#ifdef DEBUG
 	fprintf(stderr, "Connection established\n");
+	#endif
 
 	if (getnameinfo((struct sockaddr *)&server_addr, sizeof(struct sockaddr_in), \
 					server_name, name_size, NULL, 0, 0) != 0) {
+		#ifdef DEBUG
 		fprintf(stderr, "Error in getting server name\n");
+		#endif
 		exit(EXIT_FAILURE);
 	}
+	#ifdef DEBUG
 	fprintf(stderr, "Got server name\n");
+	#endif
 
 	printf("Connected to server %s (%s)\n", server_name, inet_ntoa(server_addr.sin_addr));
 	return sockfd;
