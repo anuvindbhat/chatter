@@ -3,4 +3,4 @@
 if [ ! -f client.out ]; then
 	cc -Wall -O2 client.c -o client.out
 fi
-./client.out
+./client.out 2>/dev/null

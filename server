@@ -3,4 +3,4 @@
 if [ ! -f server.out ]; then
 	cc -Wall -O2 server.c -o server.out
 fi
-./server.out
+./server.out 2>/dev/null
