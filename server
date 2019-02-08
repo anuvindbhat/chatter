@@ -1,6 +1,6 @@
 #!/bin/bash
 
 if [ ! -f server.out ]; then
-	cc -Wall -O2 src/server.c src/common.c -o server.out
+	cc -Wall -O2 src/server.c src/common.c -o server.out -pthread
 fi
 ./server.out 2>/dev/null

@@ -53,12 +53,7 @@ int main() {
 	char server_name[NAME_SIZE];
 	int sockfd = conn_server(server_name, NAME_SIZE);
 
-	printf("Ready to message\n");
-	printf("Type \"/exit\" (without quotes) to exit\n");
-	while (1) {
-		send_msg(sockfd);
-		recv_msg(sockfd, server_name);
-	}
+	start_chat(sockfd, server_name);
 
 	close(sockfd);
 	return 0;
