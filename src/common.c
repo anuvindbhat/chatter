@@ -29,7 +29,7 @@ void * send_msg(void *arg) {
 		int size;
 
 		pthread_mutex_lock(&stdout_mutex);
-		printf("> me: ");
+		printf("> [me] ");
 		pthread_mutex_unlock(&stdout_mutex);
 		int retval = scanf(" %[^\n]", msg);
 		assert(retval == 1);
@@ -92,7 +92,7 @@ void * recv_msg(void *arg) {
 		#endif
 
 		pthread_mutex_lock(&stdout_mutex);
-		printf("> %s: %s\n", name, msg);
+		printf("> [%s] %s\n", name, msg);
 		pthread_mutex_unlock(&stdout_mutex);
 	}
 
