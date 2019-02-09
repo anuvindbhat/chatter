@@ -1,3 +1,8 @@
+/*
+chatter - A simple chat program written in C
+Copyright (c) 2019 Anuvind Bhat
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
