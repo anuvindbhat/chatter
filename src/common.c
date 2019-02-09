@@ -36,6 +36,7 @@ void * send_msg(void *arg) {
 			#endif
 			break;
 		}
+
 		size = strlen(msg);
 		if (send(sockfd, msg, size, 0) != size) {
 			#ifdef DEBUG
@@ -81,6 +82,7 @@ void * recv_msg(void *arg) {
 		fprintf(stderr, "Received message\n");
 		pthread_mutex_unlock(&stderr_mutex);
 		#endif
+
 		pthread_mutex_lock(&stdout_mutex);
 		printf("> %s: %s\n", name, msg);
 		pthread_mutex_unlock(&stdout_mutex);
@@ -144,5 +146,35 @@ void start_chat(int sockfd, char *name) {
 	pthread_mutex_unlock(&stderr_mutex);
 	#endif
 
-	pthread_join(send_thread, NULL);
+	if (pthread_join(send_thread, NULL) != 0) {
+		#ifdef DEBUG
+		pthread_mutex_lock(&stderr_mutex);
+		fprintf(stderr, "Error in send thread join\n");
+		pthread_mutex_unlock(&stderr_mutex);
+		#endif
+	}
+	else {
+		#ifdef DEBUG
+		pthread_mutex_lock(&stderr_mutex);
+		fprintf(stderr, "Send thread joined\n");
+		pthread_mutex_unlock(&stderr_mutex);
+		#endif
+	}
+
+	pthread_cancel(recv_thread);
+
+	if (pthread_join(recv_thread, NULL) != 0) {
+		#ifdef DEBUG
+		pthread_mutex_lock(&stderr_mutex);
+		fprintf(stderr, "Error in receive thread join\n");
+		pthread_mutex_unlock(&stderr_mutex);
+		#endif
+	}
+	else {
+		#ifdef DEBUG
+		pthread_mutex_lock(&stderr_mutex);
+		fprintf(stderr, "Receive thread joined\n");
+		pthread_mutex_unlock(&stderr_mutex);
+		#endif
+	}
 }
