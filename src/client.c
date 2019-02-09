@@ -29,7 +29,8 @@ int conn_server(char *server_name, int name_size) {
 	while (1) {
 		char ip_addr[16];
 		printf("Enter the server IP address (. separated)\n");
-		assert(scanf(" %s", ip_addr) == 1);
+		int retval = scanf(" %s", ip_addr);
+		assert(retval == 1);
 		if (inet_aton(ip_addr, &server_addr.sin_addr) != 0) {
 			break;
 		}

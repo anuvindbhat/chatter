@@ -23,31 +23,32 @@ void * send_msg(void *arg) {
 		char msg[MSG_SIZE];
 		int size;
 
-		assert(pthread_mutex_lock(&stdout_mutex) == 0);
+		pthread_mutex_lock(&stdout_mutex);
 		printf("> me: ");
-		assert(pthread_mutex_unlock(&stdout_mutex) == 0);
-		assert(scanf(" %[^\n]", msg) == 1);
+		pthread_mutex_unlock(&stdout_mutex);
+		int retval = scanf(" %[^\n]", msg);
+		assert(retval == 1);
 		if (strcmp(msg, "/exit") == 0) {
 			#ifdef DEBUG
-			assert(pthread_mutex_lock(&stderr_mutex) == 0);
+			pthread_mutex_lock(&stderr_mutex);
 			fprintf(stderr, "Exiting\n");
-			assert(pthread_mutex_unlock(&stderr_mutex) == 0);
+			pthread_mutex_unlock(&stderr_mutex);
 			#endif
 			break;
 		}
 		size = strlen(msg);
 		if (send(sockfd, msg, size, 0) != size) {
 			#ifdef DEBUG
-			assert(pthread_mutex_lock(&stderr_mutex) == 0);
+			pthread_mutex_lock(&stderr_mutex);
 			fprintf(stderr, "Error while sending\n");
-			assert(pthread_mutex_unlock(&stderr_mutex) == 0);
+			pthread_mutex_unlock(&stderr_mutex);
 			#endif
 			exit(EXIT_FAILURE);
 		}
 		#ifdef DEBUG
-		assert(pthread_mutex_lock(&stderr_mutex) == 0);
+		pthread_mutex_lock(&stderr_mutex);
 		fprintf(stderr, "Sent message\n");
-		assert(pthread_mutex_unlock(&stderr_mutex) == 0);
+		pthread_mutex_unlock(&stderr_mutex);
 		#endif
 	}
 
@@ -65,9 +66,9 @@ void * recv_msg(void *arg) {
 		int size = recv(sockfd, msg, MSG_SIZE - 1, 0);
 		if (size == -1) {
 			#ifdef DEBUG
-			assert(pthread_mutex_lock(&stderr_mutex) == 0);
+			pthread_mutex_lock(&stderr_mutex);
 			fprintf(stderr, "Error while receiving\n");
-			assert(pthread_mutex_unlock(&stderr_mutex) == 0);
+			pthread_mutex_unlock(&stderr_mutex);
 			#endif
 			exit(EXIT_FAILURE);
 		}
@@ -76,13 +77,13 @@ void * recv_msg(void *arg) {
 		}
 		msg[size] = '\0';
 		#ifdef DEBUG
-		assert(pthread_mutex_lock(&stderr_mutex) == 0);
+		pthread_mutex_lock(&stderr_mutex);
 		fprintf(stderr, "Received message\n");
-		assert(pthread_mutex_unlock(&stderr_mutex) == 0);
+		pthread_mutex_unlock(&stderr_mutex);
 		#endif
-		assert(pthread_mutex_lock(&stdout_mutex) == 0);
+		pthread_mutex_lock(&stdout_mutex);
 		printf("> %s: %s\n", name, msg);
-		assert(pthread_mutex_unlock(&stdout_mutex) == 0);
+		pthread_mutex_unlock(&stdout_mutex);
 	}
 
 	pthread_exit(NULL);
@@ -114,16 +115,16 @@ void start_chat(int sockfd, char *name) {
 
 	if (pthread_create(&send_thread, NULL, send_msg, (void *)&sockfd) != 0) {
 		#ifdef DEBUG
-		assert(pthread_mutex_lock(&stderr_mutex) == 0);
+		pthread_mutex_lock(&stderr_mutex);
 		fprintf(stderr, "Error in send thread creation\n");
-		assert(pthread_mutex_unlock(&stderr_mutex) == 0);
+		pthread_mutex_unlock(&stderr_mutex);
 		#endif
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
-	assert(pthread_mutex_lock(&stderr_mutex) == 0);
+	pthread_mutex_lock(&stderr_mutex);
 	fprintf(stderr, "Send thread created\n");
-	assert(pthread_mutex_unlock(&stderr_mutex) == 0);
+	pthread_mutex_unlock(&stderr_mutex);
 	#endif
 
 	struct recv_params rparams;
@@ -131,16 +132,16 @@ void start_chat(int sockfd, char *name) {
 	rparams.name = name;
 	if (pthread_create(&recv_thread, NULL, recv_msg, (void *)&rparams) != 0) {
 		#ifdef DEBUG
-		assert(pthread_mutex_lock(&stderr_mutex) == 0);
+		pthread_mutex_lock(&stderr_mutex);
 		fprintf(stderr, "Error in receive thread creation\n");
-		assert(pthread_mutex_unlock(&stderr_mutex) == 0);
+		pthread_mutex_unlock(&stderr_mutex);
 		#endif
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
-	assert(pthread_mutex_lock(&stderr_mutex) == 0);
+	pthread_mutex_lock(&stderr_mutex);
 	fprintf(stderr, "Receive thread created\n");
-	assert(pthread_mutex_unlock(&stderr_mutex) == 0);
+	pthread_mutex_unlock(&stderr_mutex);
 	#endif
 
 	pthread_join(send_thread, NULL);
