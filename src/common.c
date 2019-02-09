@@ -74,6 +74,7 @@ void * recv_msg(void *arg) {
 			exit(EXIT_FAILURE);
 		}
 		else if (size == 0) {
+			// Other host has closed the connection
 			break;
 		}
 		msg[size] = '\0';
