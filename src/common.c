@@ -74,7 +74,9 @@ void * recv_msg(void *arg) {
 			exit(EXIT_FAILURE);
 		}
 		else if (size == 0) {
-			// Other host has closed the connection
+			pthread_mutex_lock(&stdout_mutex);
+			printf("%s has left the chat\n", name);
+			pthread_mutex_unlock(&stdout_mutex);
 			break;
 		}
 		msg[size] = '\0';
