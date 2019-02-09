@@ -98,7 +98,26 @@ int main() {
 
 	start_chat(client_sockfd, client_name);
 
-	close(client_sockfd);
-	close(server_sockfd);
+	if (close(client_sockfd) != 0) {
+		#ifdef DEBUG
+		fprintf(stderr, "Error in client socket close\n");
+		#endif
+	}
+	else {
+		#ifdef DEBUG
+		fprintf(stderr, "Client socket closed\n");
+		#endif
+	}
+	if (close(server_sockfd) != 0) {
+		#ifdef DEBUG
+		fprintf(stderr, "Error in server socket close\n");
+		#endif
+	}
+	else {
+		#ifdef DEBUG
+		fprintf(stderr, "Server socket closed\n");
+		#endif
+	}
+
 	return 0;
 }

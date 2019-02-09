@@ -68,6 +68,15 @@ int main() {
 
 	start_chat(sockfd, server_name);
 
-	close(sockfd);
+	if (close(sockfd) != 0) {
+		#ifdef DEBUG
+		fprintf(stderr, "Error in socket close\n");
+		#endif
+	}
+	else {
+		#ifdef DEBUG
+		fprintf(stderr, "Socket closed\n");
+		#endif
+	}
 	return 0;
 }
