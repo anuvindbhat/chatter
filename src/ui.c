@@ -1,4 +1,10 @@
 #include <ncurses.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "../include/common.h"
+
+pthread_mutex_t ui_mutex;
 
 WINDOW *chatwb, *chatw;
 WINDOW *textwb, *textw;
@@ -8,6 +14,16 @@ int chat_rows, chat_cols;
 int text_rows, text_cols;
 
 void init_ui() {
+	if (pthread_mutex_init(&ui_mutex, NULL) != 0) {
+		#ifdef DEBUG
+		fprintf(stderr, "Error in UI mutex creation\n");
+		#endif
+		exit(EXIT_FAILURE);
+	}
+	#ifdef DEBUG
+	fprintf(stderr, "UI mutex created\n");
+	#endif
+
 	initscr();
 	getmaxyx(stdscr, max_rows, max_cols);
 	text_rows = max_rows / 8;
@@ -32,8 +48,10 @@ void destroy_ui() {
 }
 
 void print_msg(char *msg) {
+	pthread_mutex_lock(&ui_mutex);
 	wprintw(chatw, "\n%s", msg);
 	wrefresh(chatw);
+	pthread_mutex_unlock(&ui_mutex);
 }
 
 void scan_msg(char *msg) {

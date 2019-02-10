@@ -6,7 +6,6 @@ Copyright (c) 2019 Anuvind Bhat
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
-#include <assert.h>
 #include <string.h>
 #include <pthread.h>
 #include "../include/common.h"
@@ -17,7 +16,6 @@ struct recv_params {
 	char *name;
 };
 
-pthread_mutex_t ui_mutex;
 #ifdef DEBUG
 pthread_mutex_t stderr_mutex;
 #endif
@@ -42,9 +40,7 @@ void * send_msg(void *arg) {
 		}
 		char buffer[BUFFER_SIZE];
 		sprintf(buffer, "[me] %s", msg);
-		pthread_mutex_lock(&ui_mutex);
 		print_msg(buffer);
-		pthread_mutex_unlock(&ui_mutex);
 
 		size = strlen(msg);
 		if (send(sockfd, msg, size, 0) != size) {
@@ -85,9 +81,7 @@ void * recv_msg(void *arg) {
 		else if (size == 0) {
 			char buffer[BUFFER_SIZE];
 			sprintf(buffer, "%s has left the chat", name);
-			pthread_mutex_lock(&ui_mutex);
 			print_msg(buffer);
-			pthread_mutex_unlock(&ui_mutex);
 			break;
 		}
 		msg[size] = '\0';
@@ -99,9 +93,7 @@ void * recv_msg(void *arg) {
 
 		char buffer[BUFFER_SIZE];
 		sprintf(buffer, "[%s] %s", name, msg);
-		pthread_mutex_lock(&ui_mutex);
 		print_msg(buffer);
-		pthread_mutex_unlock(&ui_mutex);
 	}
 
 	pthread_exit(NULL);
@@ -110,16 +102,6 @@ void * recv_msg(void *arg) {
 void start_chat(int sockfd, char *name) {
 	print_msg("Ready to chat");
 	print_msg("Type \"/exit\" (without quotes) to exit");
-
-	if (pthread_mutex_init(&ui_mutex, NULL) != 0) {
-		#ifdef DEBUG
-		fprintf(stderr, "Error in UI mutex creation\n");
-		#endif
-		exit(EXIT_FAILURE);
-	}
-	#ifdef DEBUG
-	fprintf(stderr, "UI mutex created\n");
-	#endif
 
 	#ifdef DEBUG
 	if (pthread_mutex_init(&stderr_mutex, NULL) != 0) {
