@@ -11,8 +11,8 @@ Copyright (c) 2019 Anuvind Bhat
 #include <netinet/in.h>
 #include <netdb.h>
 #include <string.h>
-#include <assert.h>
 #include "../include/common.h"
+#include "../include/ui.h"
 
 int conn_server(char *server_name, int name_size) {
 	int sockfd = socket(PF_INET, SOCK_STREAM, 0);
@@ -33,13 +33,13 @@ int conn_server(char *server_name, int name_size) {
 
 	while (1) {
 		char ip_addr[16];
-		printf("Enter the server IP address (. separated)\n");
-		int retval = scanf(" %s", ip_addr);
-		assert(retval == 1);
+		print_msg("Enter the server IP address (. separated)");
+		scan_msg(ip_addr);
+		print_msg(ip_addr);
 		if (inet_aton(ip_addr, &server_addr.sin_addr) != 0) {
 			break;
 		}
-		printf("Invalid IP address\n");
+		print_msg("Invalid IP address");
 	}
 
 	if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr_in)) != 0) {
@@ -63,11 +63,14 @@ int conn_server(char *server_name, int name_size) {
 	fprintf(stderr, "Got server name\n");
 	#endif
 
-	printf("Connected to server %s (%s)\n", server_name, inet_ntoa(server_addr.sin_addr));
+	char buffer[BUFFER_SIZE];
+	sprintf(buffer, "Connected to server %s (%s)", server_name, inet_ntoa(server_addr.sin_addr));
+	print_msg(buffer);
 	return sockfd;
 }
 
 int main() {
+	init_ui();
 	char server_name[NAME_SIZE];
 	int sockfd = conn_server(server_name, NAME_SIZE);
 
@@ -83,5 +86,7 @@ int main() {
 		fprintf(stderr, "Socket closed\n");
 		#endif
 	}
+
+	destroy_ui();
 	return 0;
 }

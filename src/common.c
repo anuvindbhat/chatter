@@ -10,13 +10,14 @@ Copyright (c) 2019 Anuvind Bhat
 #include <string.h>
 #include <pthread.h>
 #include "../include/common.h"
+#include "../include/ui.h"
 
 struct recv_params {
 	int sockfd;
 	char *name;
 };
 
-pthread_mutex_t stdout_mutex;
+pthread_mutex_t ui_mutex;
 #ifdef DEBUG
 pthread_mutex_t stderr_mutex;
 #endif
@@ -28,11 +29,7 @@ void * send_msg(void *arg) {
 		char msg[MSG_SIZE];
 		int size;
 
-		pthread_mutex_lock(&stdout_mutex);
-		printf("> [me] ");
-		pthread_mutex_unlock(&stdout_mutex);
-		int retval = scanf(" %[^\n]", msg);
-		assert(retval == 1);
+		scan_msg(msg);
 		if (strcmp(msg, "/exit") == 0) {
 			#ifdef DEBUG
 			pthread_mutex_lock(&stderr_mutex);
@@ -41,6 +38,9 @@ void * send_msg(void *arg) {
 			#endif
 			break;
 		}
+		char buffer[BUFFER_SIZE];
+		sprintf(buffer, "[me] %s", msg);
+		print_msg(buffer);
 
 		size = strlen(msg);
 		if (send(sockfd, msg, size, 0) != size) {
@@ -79,9 +79,9 @@ void * recv_msg(void *arg) {
 			exit(EXIT_FAILURE);
 		}
 		else if (size == 0) {
-			pthread_mutex_lock(&stdout_mutex);
-			printf("%s has left the chat\n", name);
-			pthread_mutex_unlock(&stdout_mutex);
+			char buffer[BUFFER_SIZE];
+			sprintf(buffer, "%s has left the chat", name);
+			print_msg(buffer);
 			break;
 		}
 		msg[size] = '\0';
@@ -91,26 +91,26 @@ void * recv_msg(void *arg) {
 		pthread_mutex_unlock(&stderr_mutex);
 		#endif
 
-		pthread_mutex_lock(&stdout_mutex);
-		printf("> [%s] %s\n", name, msg);
-		pthread_mutex_unlock(&stdout_mutex);
+		char buffer[BUFFER_SIZE];
+		sprintf(buffer, "[%s] %s", name, msg);
+		print_msg(buffer);
 	}
 
 	pthread_exit(NULL);
 }
 
 void start_chat(int sockfd, char *name) {
-	printf("Ready to chat\n");
-	printf("Type \"/exit\" (without quotes) to exit\n");
+	print_msg("Ready to chat");
+	print_msg("Type \"/exit\" (without quotes) to exit");
 
-	if (pthread_mutex_init(&stdout_mutex, NULL) != 0) {
+	if (pthread_mutex_init(&ui_mutex, NULL) != 0) {
 		#ifdef DEBUG
-		fprintf(stderr, "Error in stdout mutex creation\n");
+		fprintf(stderr, "Error in UI mutex creation\n");
 		#endif
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
-	fprintf(stderr, "stdout mutex created\n");
+	fprintf(stderr, "UI mutex created\n");
 	#endif
 
 	#ifdef DEBUG

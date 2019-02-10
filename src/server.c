@@ -11,6 +11,7 @@ Copyright (c) 2019 Anuvind Bhat
 #include <netdb.h>
 #include <string.h>
 #include "../include/common.h"
+#include "../include/ui.h"
 
 #define MAX_PENDING 3
 
@@ -69,7 +70,8 @@ int start_listen() {
 int conn_client(int server_sockfd, char *client_name, int name_size) {
 	struct sockaddr_in client_addr;
 	socklen_t addr_length = sizeof(struct sockaddr_in);
-	printf("Waiting for client to connect\n");
+
+	print_msg("Waiting for client to connect");
 	int client_sockfd = accept(server_sockfd, (struct sockaddr *)&client_addr, &addr_length);
 	if (client_sockfd == -1) {
 		#ifdef DEBUG
@@ -92,11 +94,14 @@ int conn_client(int server_sockfd, char *client_name, int name_size) {
 	fprintf(stderr, "Got client name\n");
 	#endif
 
-	printf("Connected to client %s (%s)\n", client_name, inet_ntoa(client_addr.sin_addr));
+	char buffer[BUFFER_SIZE];
+	sprintf(buffer, "Connected to client %s (%s)", client_name, inet_ntoa(client_addr.sin_addr));
+	print_msg(buffer);
 	return client_sockfd;
 }
 
 int main() {
+	init_ui();
 	int server_sockfd = start_listen();
 	char client_name[NAME_SIZE];
 	int client_sockfd = conn_client(server_sockfd, client_name, NAME_SIZE);
@@ -124,5 +129,6 @@ int main() {
 		#endif
 	}
 
+	destroy_ui();
 	return 0;
 }

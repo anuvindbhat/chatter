@@ -1,6 +1,6 @@
 #!/bin/bash
 
 if [ ! -f server.out ]; then
-	cc -Wall -O2 src/server.c src/common.c -o server.out -pthread
+	cc -Wall -O2 src/server.c src/common.c src/ui.c -o server.out -pthread -lncurses
 fi
-./server.out
+./server.out 2> server.log
