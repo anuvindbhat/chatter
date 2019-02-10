@@ -40,7 +40,9 @@ void * send_msg(void *arg) {
 		}
 		char buffer[BUFFER_SIZE];
 		sprintf(buffer, "[me] %s", msg);
+		pthread_mutex_lock(&ui_mutex);
 		print_msg(buffer);
+		pthread_mutex_unlock(&ui_mutex);
 
 		size = strlen(msg);
 		if (send(sockfd, msg, size, 0) != size) {
@@ -81,7 +83,9 @@ void * recv_msg(void *arg) {
 		else if (size == 0) {
 			char buffer[BUFFER_SIZE];
 			sprintf(buffer, "%s has left the chat", name);
+			pthread_mutex_lock(&ui_mutex);
 			print_msg(buffer);
+			pthread_mutex_unlock(&ui_mutex);
 			break;
 		}
 		msg[size] = '\0';
@@ -93,7 +97,9 @@ void * recv_msg(void *arg) {
 
 		char buffer[BUFFER_SIZE];
 		sprintf(buffer, "[%s] %s", name, msg);
+		pthread_mutex_lock(&ui_mutex);
 		print_msg(buffer);
+		pthread_mutex_unlock(&ui_mutex);
 	}
 
 	pthread_exit(NULL);
