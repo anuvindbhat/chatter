@@ -29,7 +29,9 @@ void * send_msg(void *arg) {
 		char msg[MSG_SIZE];
 		int size;
 
-		scan_msg(msg);
+		do {
+			scan_msg(msg);
+		} while(strlen(msg) == 0);
 		if (strcmp(msg, "/exit") == 0) {
 			#ifdef DEBUG
 			pthread_mutex_lock(&stderr_mutex);
