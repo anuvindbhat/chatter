@@ -25,6 +25,7 @@ void init_ui() {
 	#endif
 
 	initscr();
+	nocbreak();
 	getmaxyx(stdscr, max_rows, max_cols);
 	text_rows = max_rows / 8;
 	text_cols = max_cols - 2;
