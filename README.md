@@ -1,5 +1,5 @@
 # chatter
-A simple chat program written in C
+A multithreaded chat program written in C using POSIX sockets
 
 ## Dependencies
 [GCC](https://gcc.gnu.org/install/)\
