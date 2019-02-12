@@ -74,11 +74,11 @@ void print_msg(char *msg, char *name, int flags) {
 	time(&rawtime);
 	struct tm *timestamp = localtime(&rawtime);
 	if ((flags & DISPLAY_TIME) && (flags & DISPLAY_NAME)) {
-		sprintf(buffer, "|%2d:%2d:%2d| [%s] %s", \
+		sprintf(buffer, "|%02d:%02d:%02d| [%s] %s", \
 				timestamp->tm_hour, timestamp->tm_min, timestamp->tm_sec, name, msg);
 	}
 	else if (flags & DISPLAY_TIME) {
-		sprintf(buffer, "|%2d:%2d:%2d| %s", \
+		sprintf(buffer, "|%02d:%02d:%02d| %s", \
 				timestamp->tm_hour, timestamp->tm_min, timestamp->tm_sec, msg);
 	}
 	else if (flags & DISPLAY_NAME) {
