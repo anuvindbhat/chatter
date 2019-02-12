@@ -7,7 +7,11 @@ Copyright (c) 2019 Anuvind Bhat
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "../include/common.h"
+#include "../include/ui.h"
+
+#define BUFFER_SIZE (MSG_SIZE + NAME_SIZE + 20)
 
 pthread_mutex_t chat_mutex;
 pthread_mutex_t text_mutex;
@@ -64,9 +68,24 @@ void destroy_ui() {
 	endwin();
 }
 
-void print_msg(char *msg) {
+void print_msg(char *msg, char *name, int flags) {
+	char buffer[BUFFER_SIZE];
+	time_t rawtime;
+	time(&rawtime);
+	struct tm *timestamp = localtime(&rawtime);
+	if ((flags & DISPLAY_TIME) && (flags & DISPLAY_NAME)) {
+		sprintf(buffer, "|%2d:%2d:%2d| [%s] %s", \
+				timestamp->tm_hour, timestamp->tm_min, timestamp->tm_sec, name, msg);
+	}
+	else if (flags & DISPLAY_TIME) {
+		sprintf(buffer, "|%2d:%2d:%2d| %s", \
+				timestamp->tm_hour, timestamp->tm_min, timestamp->tm_sec, msg);
+	}
+	else if (flags & DISPLAY_NAME) {
+		sprintf(buffer, "[%s] %s", name, msg);
+	}
 	pthread_mutex_lock(&chat_mutex);
-	wprintw(chatw, "\n%s", msg);
+	wprintw(chatw, "\n%s", buffer);
 	wrefresh(chatw);
 	pthread_mutex_unlock(&chat_mutex);
 }

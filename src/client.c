@@ -34,13 +34,13 @@ int conn_server(char *server_name, int name_size) {
 
 	while (1) {
 		char ip_addr[16];
-		print_msg("Enter the server IP address (. separated)");
+		print_msg("Enter the server IP address (. separated)", NULL, DISPLAY_TIME);
 		scan_msg(ip_addr);
-		print_msg(ip_addr);
+		print_msg(ip_addr, NULL, DISPLAY_TIME);
 		if (inet_aton(ip_addr, &server_addr.sin_addr) != 0) {
 			break;
 		}
-		print_msg("Invalid IP address");
+		print_msg("Invalid IP address", NULL, DISPLAY_TIME);
 	}
 
 	if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr_in)) != 0) {
@@ -66,9 +66,9 @@ int conn_server(char *server_name, int name_size) {
 	fprintf(stderr, "Got server name\n");
 	#endif
 
-	char buffer[BUFFER_SIZE];
-	sprintf(buffer, "Connected to server %s (%s)", server_name, inet_ntoa(server_addr.sin_addr));
-	print_msg(buffer);
+	char msg[MSG_SIZE];
+	sprintf(msg, "Connected to server %s (%s)", server_name, inet_ntoa(server_addr.sin_addr));
+	print_msg(msg, NULL, DISPLAY_TIME);
 	return sockfd;
 }
 

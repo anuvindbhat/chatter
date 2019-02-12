@@ -75,7 +75,7 @@ int conn_client(int server_sockfd, char *client_name, int name_size) {
 	struct sockaddr_in client_addr;
 	socklen_t addr_length = sizeof(struct sockaddr_in);
 
-	print_msg("Waiting for client to connect");
+	print_msg("Waiting for client to connect", NULL, DISPLAY_TIME);
 	int client_sockfd = accept(server_sockfd, (struct sockaddr *)&client_addr, &addr_length);
 	if (client_sockfd == -1) {
 		#ifdef DEBUG
@@ -100,9 +100,9 @@ int conn_client(int server_sockfd, char *client_name, int name_size) {
 	fprintf(stderr, "Got client name\n");
 	#endif
 
-	char buffer[BUFFER_SIZE];
-	sprintf(buffer, "Connected to client %s (%s)", client_name, inet_ntoa(client_addr.sin_addr));
-	print_msg(buffer);
+	char msg[MSG_SIZE];
+	sprintf(msg, "Connected to client %s (%s)", client_name, inet_ntoa(client_addr.sin_addr));
+	print_msg(msg, NULL, DISPLAY_TIME);
 	return client_sockfd;
 }
 

@@ -38,9 +38,7 @@ void * send_msg(void *arg) {
 			#endif
 			break;
 		}
-		char buffer[BUFFER_SIZE];
-		sprintf(buffer, "[me] %s", msg);
-		print_msg(buffer);
+		print_msg(msg, "me", DISPLAY_TIME | DISPLAY_NAME);
 
 		size = strlen(msg);
 		if (send(sockfd, msg, size, 0) != size) {
@@ -81,9 +79,8 @@ void * recv_msg(void *arg) {
 			exit(EXIT_FAILURE);
 		}
 		else if (size == 0) {
-			char buffer[BUFFER_SIZE];
-			sprintf(buffer, "%s has left the chat", name);
-			print_msg(buffer);
+			sprintf(msg, "%s has left the chat", name);
+			print_msg(msg, NULL, DISPLAY_TIME);
 			break;
 		}
 		msg[size] = '\0';
@@ -93,17 +90,15 @@ void * recv_msg(void *arg) {
 		pthread_mutex_unlock(&stderr_mutex);
 		#endif
 
-		char buffer[BUFFER_SIZE];
-		sprintf(buffer, "[%s] %s", name, msg);
-		print_msg(buffer);
+		print_msg(msg, name, DISPLAY_TIME | DISPLAY_NAME);
 	}
 
 	pthread_exit(NULL);
 }
 
 void start_chat(int sockfd, char *name) {
-	print_msg("Ready to chat");
-	print_msg("Type \"/exit\" (without quotes) to exit");
+	print_msg("Ready to chat", NULL, DISPLAY_TIME);
+	print_msg("Type \"/exit\" (without quotes) to exit", NULL, DISPLAY_TIME);
 
 	#ifdef DEBUG
 	if (pthread_mutex_init(&stderr_mutex, NULL) != 0) {
