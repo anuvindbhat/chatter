@@ -65,7 +65,11 @@ void init_ui() {
 }
 
 void destroy_ui() {
+	pthread_mutex_lock(&chat_mutex);
+	pthread_mutex_lock(&text_mutex);
 	endwin();
+	pthread_mutex_unlock(&text_mutex);
+	pthread_mutex_unlock(&chat_mutex);
 }
 
 void print_msg(char *msg, char *name, int flags) {
