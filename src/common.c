@@ -49,6 +49,7 @@ void * send_msg(void *arg) {
 			fprintf(stderr, "Error while sending\n");
 			pthread_mutex_unlock(&stderr_mutex);
 			#endif
+			destroy_ui();
 			exit(EXIT_FAILURE);
 		}
 		#ifdef DEBUG
@@ -76,6 +77,7 @@ void * recv_msg(void *arg) {
 			fprintf(stderr, "Error while receiving\n");
 			pthread_mutex_unlock(&stderr_mutex);
 			#endif
+			destroy_ui();
 			exit(EXIT_FAILURE);
 		}
 		else if (size == 0) {
@@ -106,6 +108,7 @@ void start_chat(int sockfd, char *name) {
 	#ifdef DEBUG
 	if (pthread_mutex_init(&stderr_mutex, NULL) != 0) {
 		fprintf(stderr, "Error in stderr mutex creation\n");
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	fprintf(stderr, "stderr mutex created\n");
@@ -119,6 +122,7 @@ void start_chat(int sockfd, char *name) {
 		fprintf(stderr, "Error in send thread creation\n");
 		pthread_mutex_unlock(&stderr_mutex);
 		#endif
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
@@ -136,6 +140,7 @@ void start_chat(int sockfd, char *name) {
 		fprintf(stderr, "Error in receive thread creation\n");
 		pthread_mutex_unlock(&stderr_mutex);
 		#endif
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG

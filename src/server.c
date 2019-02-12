@@ -21,6 +21,7 @@ int start_listen() {
 		#ifdef DEBUG
 		fprintf(stderr, "Error in server socket creation\n");
 		#endif
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
@@ -32,6 +33,7 @@ int start_listen() {
 		#ifdef DEBUG
 		fprintf(stderr, "Error in setting SO_REUSEADDR\n");
 		#endif
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
@@ -48,6 +50,7 @@ int start_listen() {
 		#ifdef DEBUG
 		fprintf(stderr, "Error in binding\n");
 		#endif
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
@@ -58,6 +61,7 @@ int start_listen() {
 		#ifdef DEBUG
 		fprintf(stderr, "Error in listening\n");
 		#endif
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
@@ -77,6 +81,7 @@ int conn_client(int server_sockfd, char *client_name, int name_size) {
 		#ifdef DEBUG
 		fprintf(stderr, "Error in client socket creation\n");
 		#endif
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
@@ -88,6 +93,7 @@ int conn_client(int server_sockfd, char *client_name, int name_size) {
 		#ifdef DEBUG
 		fprintf(stderr, "Error in getting client name\n");
 		#endif
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG

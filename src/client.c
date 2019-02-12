@@ -20,6 +20,7 @@ int conn_server(char *server_name, int name_size) {
 		#ifdef DEBUG
 		fprintf(stderr, "Error in socket creation\n");
 		#endif
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
@@ -46,6 +47,7 @@ int conn_server(char *server_name, int name_size) {
 		#ifdef DEBUG
 		fprintf(stderr, "Error in connection establishment\n");
 		#endif
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
@@ -57,6 +59,7 @@ int conn_server(char *server_name, int name_size) {
 		#ifdef DEBUG
 		fprintf(stderr, "Error in getting server name\n");
 		#endif
+		destroy_ui();
 		exit(EXIT_FAILURE);
 	}
 	#ifdef DEBUG
