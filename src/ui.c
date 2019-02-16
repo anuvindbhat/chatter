@@ -51,8 +51,8 @@ void init_ui() {
 	text_cols = max_cols - 2;
 	chat_rows = max_rows - text_rows - 4;
 	chat_cols = max_cols - 2;
-	chatwb = newwin(chat_rows + 2, chat_cols + 2, 0, 0);
-	textwb = newwin(text_rows + 2, text_cols + 2, chat_rows + 2, 0);
+	chatwb = derwin(stdscr, chat_rows + 2, chat_cols + 2, 0, 0);
+	textwb = derwin(stdscr, text_rows + 2, text_cols + 2, chat_rows + 2, 0);
 	box(chatwb, 0, 0);
 	box(textwb, 0, 0);
 	wrefresh(chatwb);
@@ -65,11 +65,11 @@ void init_ui() {
 }
 
 void destroy_ui() {
-	pthread_mutex_lock(&chat_mutex);
 	pthread_mutex_lock(&text_mutex);
+	pthread_mutex_lock(&chat_mutex);
 	endwin();
-	pthread_mutex_unlock(&text_mutex);
 	pthread_mutex_unlock(&chat_mutex);
+	pthread_mutex_unlock(&text_mutex);
 }
 
 void print_msg(char *msg, char *name, int flags) {
