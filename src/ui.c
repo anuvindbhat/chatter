@@ -23,6 +23,8 @@ int max_rows, max_cols;
 int chat_rows, chat_cols;
 int text_rows, text_cols;
 
+void draw_ui();
+
 void init_ui() {
 	if (pthread_mutex_init(&chat_mutex, NULL) != 0) {
 		#ifdef DEBUG
@@ -45,6 +47,10 @@ void init_ui() {
 	#endif
 
 	initscr();
+	draw_ui();
+}
+
+void draw_ui() {
 	nocbreak();
 	getmaxyx(stdscr, max_rows, max_cols);
 	text_rows = max_rows / 8;
@@ -64,12 +70,28 @@ void init_ui() {
 	wmove(chatw, chat_rows - 1, 0);
 }
 
-void destroy_ui() {
-	pthread_mutex_lock(&text_mutex);
+void redraw_ui() {
 	pthread_mutex_lock(&chat_mutex);
+	pthread_mutex_lock(&text_mutex);
+	delwin(chatw);
+	delwin(textw);
+	delwin(chatwb);
+	delwin(textwb);
 	endwin();
-	pthread_mutex_unlock(&chat_mutex);
+	refresh();
+	clear();
+	refresh();
+	draw_ui();
 	pthread_mutex_unlock(&text_mutex);
+	pthread_mutex_unlock(&chat_mutex);
+}
+
+void destroy_ui() {
+	pthread_mutex_lock(&chat_mutex);
+	pthread_mutex_lock(&text_mutex);
+	endwin();
+	pthread_mutex_unlock(&text_mutex);
+	pthread_mutex_unlock(&chat_mutex);
 }
 
 void print_msg(char *msg, char *name, int flags) {

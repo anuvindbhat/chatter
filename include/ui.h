@@ -10,6 +10,7 @@ Copyright (c) 2019 Anuvind Bhat
 #define DISPLAY_NAME 0x02
 
 void init_ui();
+void redraw_ui();
 void destroy_ui();
 void print_msg(char *msg, char *name, int flags);
 void scan_msg(char *msg);

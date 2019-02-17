@@ -38,6 +38,15 @@ void * send_msg(void *arg) {
 			#endif
 			break;
 		}
+		else if(strcmp(msg, "/redraw") == 0) {
+			#ifdef DEBUG
+			pthread_mutex_lock(&stderr_mutex);
+			fprintf(stderr, "Redrawing\n");
+			pthread_mutex_unlock(&stderr_mutex);
+			#endif
+			redraw_ui();
+			continue;
+		}
 		print_msg(msg, "me", DISPLAY_TIME | DISPLAY_NAME);
 
 		size = strlen(msg);
