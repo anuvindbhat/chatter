@@ -10,4 +10,4 @@ A multithreaded chat program written in C using POSIX sockets
 
 ## Usage
 Run the server using ```./server``` and run the client using ```./client```.\
-The IP of a machine can be found using ```ip a | grep inet``` or ```hostname -I```.
+The IP address of a machine can be found using ```ip a | grep inet``` or ```hostname -I```.
